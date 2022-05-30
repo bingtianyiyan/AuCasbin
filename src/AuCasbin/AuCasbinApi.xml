@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AuCasbinApi</name>
+    </assembly>
+    <members>
+        <member name="T:AuCasbinApi.Controllers.AreaController">
+            <summary>
+            域控制器
+            </summary>
+        </member>
+    </members>
+</doc>
