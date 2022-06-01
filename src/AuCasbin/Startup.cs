@@ -29,6 +29,7 @@ namespace AuCasbinApi
             services.AddDefaultService()
                 .AddSwaggerServie()
                 .AddDbService()
+                .AddJwtService()
                 .AddOtherService();
         }
 
@@ -41,6 +42,9 @@ namespace AuCasbinApi
             }
 
             app.UseHttpsRedirection();
+
+            //хож╓
+            app.UseAuthentication();
 
             app.UseRouting();
 

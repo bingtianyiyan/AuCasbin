@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AuCasbin.Repository\AuCasbin.Repository.csproj" />
+    <ProjectReference Include="..\AuCasbin.TransData\AuCasbin.TransData.csproj" />
   </ItemGroup>
 
 </Project>

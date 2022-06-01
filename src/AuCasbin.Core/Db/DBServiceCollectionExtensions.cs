@@ -20,6 +20,7 @@ namespace AuCasbin.Core.Db
 
             var freeSqlBuilder = new FreeSqlBuilder()
                     .UseConnectionString(dbConfig.Type, dbConfig.ConnectionString)
+                   // .UseSlave("slave1")
                     .UseAutoSyncStructure(false)
                     .UseLazyLoading(false)
                     .UseNoneCommandParameter(true);

@@ -1,19 +1,30 @@
-﻿using AuCasbin.Core.Configurations;
+﻿using AuCasbin.Core.Auth;
+using AuCasbin.Core.Configurations;
 using AuCasbin.Core.Db;
 using AuCasbin.Core.Filters;
 using AuCasbin.Core.Logs;
 using AuCasbin.Infrastructure.Configs;
 using AuCasbin.Infrastructure.Enums;
+using Mapster;
+using MapsterMapper;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.DependencyModel;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -122,7 +133,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddDbService(this IServiceCollection services)
         {
-            DbConfig dbConfig = ConfigurationManager.Get<DbConfig>();
+            DbConfig dbConfig = ConfigurationManager.GetSection("Db").Get<DbConfig>();
             //添加数据库
             services.AddDbAsync(dbConfig).Wait();
 
@@ -135,9 +146,57 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
+
+        public static IServiceCollection AddJwtService(this IServiceCollection services)
+        {
+            //权限处理
+            services.AddScoped<IPermissionHandler, PermissionHandler>();
+            // ClaimType不被更改
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            //jwt
+            services.TryAddSingleton<IUser, User>();
+
+            var jwtConfig = ConfigurationManager.GetSection("Jwt").Get<JwtConfig>();
+            services.TryAddSingleton(jwtConfig);
+
+            //jwt
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = nameof(ResponseAuthenticationHandler); //401
+                options.DefaultForbidScheme = nameof(ResponseAuthenticationHandler);    //403
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtConfig.Issuer,
+                    ValidAudience = jwtConfig.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecurityKey)),
+                    ClockSkew = TimeSpan.Zero
+                };
+            })
+            .AddScheme<AuthenticationSchemeOptions, ResponseAuthenticationHandler>(nameof(ResponseAuthenticationHandler), o => { });
+            return services;
+        }
+
         public static IServiceCollection AddOtherService(this IServiceCollection services)
         {
             services.AddScoped<ILogHandler, LogHandler>();
+
+            #region Mapster 映射配置
+
+            Assembly[] assemblies = DependencyContext.Default.RuntimeLibraries
+                .Where(a => a.Name.StartsWith("AuCasbin"))
+                .Select(o => Assembly.Load(new AssemblyName(o.Name))).ToArray();
+            services.AddScoped<IMapper>(sp => new Mapper());
+            TypeAdapterConfig.GlobalSettings.Scan(assemblies);
+
+            #endregion Mapster 映射配置
             return services;
         }
     }

@@ -1,0 +1,15 @@
+/src/.vs
+/src/AuCasbin/obj
+/src/AuCasbin/bin
+/src/AuCasbin.Core/obj
+/src/AuCasbin.Core/bin
+/src/AuCasbin.Domain/bin
+/src/AuCasbin.Domain/obj
+/src/AuCasbin.DomainService/bin
+/src/AuCasbin.DomainService/obj
+/src/AuCasbin.Infrastructure/bin
+/src/AuCasbin.Infrastructure/obj
+/src/AuCasbin.Repository/bin
+/src/AuCasbin.Repository/obj
+/src/AuCasbin.TransData/bin
+/src/AuCasbin.TransData/obj
