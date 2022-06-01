@@ -1,3 +1,4 @@
+using AuCasbin.Infrastructure.Consts;
 using AuCasbin.Infrastructure.Enums;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -48,6 +49,10 @@ namespace AuCasbinApi
 
             app.UseRouting();
 
+            //¿çÓò
+            app.UseCors(AdminConsts.RequestPolicyName);
+
+            //ÊÚÈ¨
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

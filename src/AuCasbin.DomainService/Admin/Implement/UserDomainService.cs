@@ -13,6 +13,7 @@ using AuCasbin.Core.Attributes;
 using AuCasbin.Core.Db;
 using FreeSql;
 using AuCasbin.Core.Auth;
+using AuCasbin.Infrastructure.Extensions;
 
 namespace AuCasbin.DomainService.Admin.Implement
 {
@@ -128,6 +129,43 @@ namespace AuCasbin.DomainService.Admin.Implement
             });
 
             return token;
+        }
+
+        /// <summary>
+        /// 刷新Token
+        /// 以旧换新
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+
+        public async Task<IResultOutput> Refresh(string token)
+        {
+            var userClaims = LazyGetRequiredService<IUserToken>().Decode(token);
+            if (userClaims == null || userClaims.Length == 0)
+            {
+                return ResultOutput.NotOk();
+            }
+
+            var refreshExpires = userClaims.FirstOrDefault(a => a.Type == ClaimAttributes.RefreshExpires)?.Value;
+            if (refreshExpires.IsNull())
+            {
+                return ResultOutput.NotOk();
+            }
+
+            if (refreshExpires.ToLong() <= DateTime.Now.ToTimestamp())
+            {
+                return ResultOutput.NotOk("登录信息已过期");
+            }
+
+            var userId = userClaims.FirstOrDefault(a => a.Type == ClaimAttributes.UserId)?.Value;
+            if (userId.IsNull())
+            {
+                return ResultOutput.NotOk("登录信息已失效");
+            }
+            //获取用户信息
+            //var output = await LazyGetRequiredService<IUserService>().GetLoginUserAsync(userId.ToLong());
+            string newToken = GetTokenTest();//GetToken(output?.Data);
+            return ResultOutput.Ok(new { token = newToken });
         }
         #endregion
 

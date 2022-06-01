@@ -4,6 +4,7 @@ using AuCasbin.Core.Db;
 using AuCasbin.Core.Filters;
 using AuCasbin.Core.Logs;
 using AuCasbin.Infrastructure.Configs;
+using AuCasbin.Infrastructure.Consts;
 using AuCasbin.Infrastructure.Enums;
 using Mapster;
 using MapsterMapper;
@@ -187,6 +188,43 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddOtherService(this IServiceCollection services)
         {
             services.AddScoped<ILogHandler, LogHandler>();
+
+            #region Cors 跨域
+            services.AddCors(options =>
+            {
+                options.AddPolicy(AdminConsts.RequestPolicyName, policy =>
+                {
+                    //var hasOrigins = appConfig.CorUrls?.Length > 0;
+                    //if (hasOrigins)
+                    //{
+                    //    policy.WithOrigins(appConfig.CorUrls);
+                    //}
+                    //else
+                    //{
+                    //    policy.AllowAnyOrigin();
+                    //}
+                    policy.AllowAnyOrigin();
+                    policy
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+
+                    //if (hasOrigins)
+                    //{
+                    //    policy.AllowCredentials();
+                    //}
+                });
+
+                //允许任何源访问Api策略，使用时在控制器或者接口上增加特性[EnableCors(AdminConsts.AllowAnyPolicyName)]
+                options.AddPolicy(AdminConsts.AllowAnyPolicyName, policy =>
+                {
+                    policy
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                });
+            });
+
+            #endregion Cors 跨域
 
             #region Mapster 映射配置
 
