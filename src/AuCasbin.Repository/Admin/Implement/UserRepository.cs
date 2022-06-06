@@ -7,7 +7,7 @@ using AuCasbin.Domain;
 
 namespace AuCasbin.Repository.Admin.Implement
 {
-    public class UserRepository : RepositoryBase<AdUser>, IUserRepository
+    public class UserRepository : RepositoryBase<TUser>, IUserRepository
     {
         public UserRepository(DbUnitOfWorkManager muowm) : base(muowm)
         {

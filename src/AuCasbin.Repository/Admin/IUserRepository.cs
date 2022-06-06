@@ -6,7 +6,7 @@ using AuCasbin.Domain;
 
 namespace AuCasbin.Repository.Admin
 {
-    public interface IUserRepository : IRepositoryBase<AdUser>
+    public partial interface IUserRepository : IRepositoryBase<TUser>
     {
     }
 }

@@ -36,10 +36,10 @@ namespace AuCasbin.DomainService.Admin.Implement
 
         public async Task GetUserInfoAsync()
         {
-            var info = await _userRepository.GetAsync<AdUser>(x=>x.UserName == "admin");
-            Console.WriteLine(info?.Avatar);
+            var info = await _userRepository.GetAsync<TUser>(x=>x.FUserName == "admin");
+            Console.WriteLine(info?.FAvatar);
 
-            var sqlList = _userRepository.Select.WithSql("select a.* from ad_user a inner join ad_user_role b on a.Id=b.UserId").ToList<AdUser>();
+            var sqlList = _userRepository.Select.WithSql("select a.* from ad_user a inner join ad_user_role b on a.Id=b.UserId").ToList<TUser>();
 
             await GetUserListAsync();
 
@@ -65,7 +65,7 @@ namespace AuCasbin.DomainService.Admin.Implement
             var list = await _userRepository.Select
           //  .WhereDynamicFilter(input.DynamicFilter)
             .Count(out var total)
-            .OrderByDescending(true, a => a.Id)
+            .OrderByDescending(true, a => a.FId)
           //  .IncludeMany(a => a.Roles.Select(b => new RoleEntity { Name = b.Name }))
             .Page(input.CurrentPage, input.PageSize)
             .ToListAsync();
@@ -82,8 +82,8 @@ namespace AuCasbin.DomainService.Admin.Implement
 
         public async Task BatchInsertAsync()
         {
-            var models = new List<AdUser>() {
-                new AdUser()
+            var models = new List<TUser>() {
+                new TUser()
                 {
 
                 }
@@ -104,9 +104,9 @@ namespace AuCasbin.DomainService.Admin.Implement
             {
 
             }
-                await _userRepository.DeleteAsync(x => ids.Contains(x.Id));
+                await _userRepository.DeleteAsync(x => ids.Contains(x.FId));
 
-            var result = await _userRepository.Where(x=> ids.Contains(x.Id)).ToDelete()
+            var result = await _userRepository.Where(x=> ids.Contains(x.FId)).ToDelete()
                 .ExecuteAffrowsAsync();
             //await _userRoleRepository.DeleteAsync(a => ids.Contains(a.UserId));
 
