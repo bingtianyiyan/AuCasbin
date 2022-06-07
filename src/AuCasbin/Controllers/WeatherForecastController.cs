@@ -35,6 +35,7 @@ namespace AuCasbinApi.Controllers
         [AllowAnonymous]
         public IEnumerable<WeatherForecast> Get()
         {
+            _logger.LogError("test");
             var rng = new Random();
             _UserDomainService.GetUserInfoAsync().Wait();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

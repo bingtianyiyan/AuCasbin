@@ -7,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
+using Serilog;
+using Serilog.Core;
+using Serilog.Events;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +22,33 @@ namespace AuCasbinApi
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            Log.Logger = new LoggerConfiguration()
+                            // 将配置传给 Serilog 的提供程序 
+                            //.ReadFrom.Configuration(Configuration)
+                            .Enrich.With(new DateTimeNowEnricher())
+                            .MinimumLevel.Information()//最小记录级别
+                            .Enrich.FromLogContext()//记录相关上下文信息 
+                            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)//对其他日志进行重写,除此之外,目前框架只有微软自带的日志组件
+                                                                                          //.WriteTo.Console()//输出到控制台 //.WriteTo.File
+
+                             .WriteTo.Console()
+                             .WriteTo.File("logs/" + DateTime.Now.Year + "/" + DateTime.Now.Month + "/log_.log", restrictedToMinimumLevel: LogEventLevel.Error, rollingInterval: RollingInterval.Day)
+                            .CreateLogger();
+
+            try
+            {
+                Log.Information("Starting web host");
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception ex)
+            {
+                //todo 
+                Log.Fatal(ex, "Host terminated unexpectedly");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -58,10 +87,24 @@ namespace AuCasbinApi
                 ConfigurationManager.SetConfiguration(configApp.Build());
                 var tt = ConfigurationManager.GetSection("Kafka:Node1:Server");
                 Console.WriteLine(tt.Value);
-            }).UseNLog()
+            })//.UseNLog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                });
+                })
+                //logger注入使用Serilog日志 dispose 参数设置为 true 会在程序退出时释放日志对象
+                .UseSerilog(dispose: true);
     }
+
+    #region Serilog 相关设置
+    class DateTimeNowEnricher : ILogEventEnricher
+    {
+        public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
+        {
+            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(
+                "DateTimeNow", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")));
+        }
+    }
+
+    #endregion
 }
