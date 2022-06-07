@@ -15,6 +15,7 @@ namespace AuCasbinApi.Controllers
     public class WeatherForecastController : AreaController
     {
         private readonly IUserDomainService _UserDomainService;
+        private readonly ICasbinDomainService _casbinDomainService;
         private static readonly string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -24,11 +25,21 @@ namespace AuCasbinApi.Controllers
 
         private IUser _user;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IUserDomainService UserDomainService,IUser user)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IUserDomainService UserDomainService,IUser user,
+            ICasbinDomainService casbinDomainService)
         {
             _logger = logger;
             _UserDomainService = UserDomainService;
             _user = user;
+            _casbinDomainService = casbinDomainService;
+        }
+
+        [HttpGet("checkRbacWithoutDomainAndRole")]
+        [AllowAnonymous]
+        public string checkRbacWithoutDomain(string userName, string domain, string permissionName)
+        {
+            _casbinDomainService.GetCheck(userName, domain, permissionName);
+            return "test";
         }
 
         [HttpGet]
