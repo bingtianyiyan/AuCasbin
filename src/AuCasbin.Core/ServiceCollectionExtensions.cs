@@ -27,6 +27,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Yitter.IdGenerator;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -188,6 +189,9 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddOtherService(this IServiceCollection services)
         {
             services.AddScoped<ILogHandler, LogHandler>();
+
+            //雪花漂移算法
+            YitIdHelper.SetIdGenerator(new IdGeneratorOptions(1) { WorkerIdBitLength = 6 });
 
             #region Cors 跨域
             services.AddCors(options =>

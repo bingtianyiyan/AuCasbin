@@ -4,6 +4,60 @@
         <name>AuCasbinApi</name>
     </assembly>
     <members>
+        <member name="T:AuCasbinApi.Controllers.ApiController">
+            <summary>
+            接口
+            </summary>
+        </member>
+        <member name="M:AuCasbinApi.Controllers.ApiController.GetAsync(System.Int64)">
+            <summary>
+            查询接口
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuCasbinApi.Controllers.ApiController.GetListAsync(System.String)">
+            <summary>
+            查询列表
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuCasbinApi.Controllers.ApiController.GetPageAsync(AuCasbin.Infrastructure.Api.PageInput{AuCasbin.TransData.Api.ApiGetPageDto})">
+            <summary>
+            查询分页
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuCasbinApi.Controllers.ApiController.AddAsync(AuCasbin.TransData.Api.ApiAddInput)">
+            <summary>
+            添加
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuCasbinApi.Controllers.ApiController.UpdateAsync(AuCasbin.TransData.Api.ApiUpdateInput)">
+            <summary>
+            修改
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuCasbinApi.Controllers.ApiController.DeleteAsync(System.Int64)">
+            <summary>
+            彻底删除
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AuCasbinApi.Controllers.ApiController.BatchDeleteAsync(System.Int64[])">
+            <summary>
+            批量删除
+            </summary>
+            <param name="ids"></param>
+            <returns></returns>
+        </member>
         <member name="T:AuCasbinApi.Controllers.AreaController">
             <summary>
             域控制器

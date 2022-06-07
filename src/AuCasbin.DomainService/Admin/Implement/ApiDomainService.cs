@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AuCasbin.Infrastructure.Extensions;
 using AuCasbin.Core.Attributes;
+using Yitter.IdGenerator;
 
 namespace AuCasbin.DomainService.Admin.Implement
 {
@@ -110,7 +111,8 @@ namespace AuCasbin.DomainService.Admin.Implement
         {
             var entity = new TApi()
             {
-                 FParentId=input.ParentId,
+                 FId = YitIdHelper.NextId(),
+                 FParentId =input.ParentId,
                  FPath = input.Path,
                  FTitle = input.Title,
                  FAction = input.HttpMethods,
@@ -164,22 +166,11 @@ namespace AuCasbin.DomainService.Admin.Implement
         }
 
         /// <summary>
-        /// 删除
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public async Task<IResultOutput> SoftDeleteAsync(long id)
-        {
-            var result = await _apiRepository.DeleteAsync(id) >0 ;
-            return ResultOutput.Result(result);
-        }
-
-        /// <summary>
         /// 批量删除
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        public async Task<IResultOutput> BatchSoftDeleteAsync(long[] ids)
+        public async Task<IResultOutput> BatchDeleteAsync(long[] ids)
         {
             var result = await _apiRepository.DeleteAsync(x=> ids.Contains(x.FId)) >0;
 
